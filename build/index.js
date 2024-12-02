@@ -1115,8 +1115,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var react_bootstrap__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-bootstrap */ "./node_modules/react-bootstrap/esm/Form.js");
 /* harmony import */ var react_bootstrap__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react-bootstrap */ "./node_modules/react-bootstrap/esm/Alert.js");
-/* harmony import */ var react_bootstrap__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react-bootstrap */ "./node_modules/react-bootstrap/esm/ProgressBar.js");
-/* harmony import */ var react_bootstrap__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! react-bootstrap */ "./node_modules/react-bootstrap/esm/Button.js");
+/* harmony import */ var react_bootstrap__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react-bootstrap */ "./node_modules/react-bootstrap/esm/Button.js");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react/jsx-runtime */ "react/jsx-runtime");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__);
 
@@ -1126,9 +1125,9 @@ const CategoryForm = () => {
   const [categoryId, setCategoryId] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(""); // Store the selected category ID
   const [categories, setCategories] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]); // Store the categories list
   const [errorMessage, setErrorMessage] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(""); // State to store the error message
-  const [progress, setProgress] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(26); // Track progress (0-100)
   const [isProcessing, setIsProcessing] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false); // To track if the process is running
   const [successMessage, setSuccessMessage] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(""); // Store success message
+  const [progress, setProgress] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(0); // Progress bar state
 
   // Fetch categories when the component is mounted
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
@@ -1166,54 +1165,41 @@ const CategoryForm = () => {
 
     // Initialize success message
     setSuccessMessage("");
-    setProgress(0);
 
-    // Start checking videos and updating progress
+    // Start checking videos
     checkVideos(categoryId);
   };
 
-  // Function to simulate the processing of posts and updating progress
+  // Function to check videos and submit posts
   const checkVideos = categoryId => {
-    // Start the process
     setIsProcessing(true);
     setSuccessMessage("Checking videos, please wait...");
-    const fetchProgress = () => {
-      fetch(yvcData.ajaxUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        body: new URLSearchParams({
-          action: "get_progress",
-          // Ensure this action is checking the server's progress
-          category_id: categoryId
-        })
-      }).then(response => response.json()) // Expect JSON response
-      .then(data => {
-        const totalPosts = data.data.totalPosts;
-        const postsProcessed = data.data.postsProcessed;
-        const progress = data.data.progress;
 
-        // Update progress bar with the current progress
-        setProgress(progress);
-
-        // If all posts are processed, stop the process
-        if (postsProcessed === totalPosts) {
-          setSuccessMessage("All posts checked and updated successfully!");
-          setIsProcessing(false); // Stop processing
-        } else {
-          // If posts are still being processed, keep polling
-          setTimeout(fetchProgress, 1000); // Delay next fetch by 1 second
-        }
-      }).catch(error => {
-        console.error("Error:", error);
-        setSuccessMessage("Error processing posts.");
+    // Send POST request to the REST API endpoint
+    fetch(yvcData.restUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: new URLSearchParams({
+        nonce: yvcData.noncex,
+        // Nonce for security
+        category_id: categoryId // Category ID to be checked
+      })
+    }).then(response => response.json()).then(data => {
+      if (data.success) {
+        setSuccessMessage(data.data.message); // Show success message from the response
         setIsProcessing(false);
-      });
-    };
-
-    // Start the first call to initiate the process
-    fetchProgress();
+      } else {
+        setIsProcessing(false);
+        setSuccessMessage("");
+        setErrorMessage("Error processing posts: " + data.data.message); // Show error message from the response
+      }
+    }).catch(error => {
+      console.error("Error:", error);
+      setSuccessMessage("Error processing posts.");
+      setIsProcessing(false);
+    });
   };
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsxs)(react_bootstrap__WEBPACK_IMPORTED_MODULE_2__["default"], {
     onSubmit: handleSubmit,
@@ -1241,15 +1227,7 @@ const CategoryForm = () => {
           children: category.name
         }, category.id))]
       })
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)("div", {
-      className: "mb-3",
-      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(react_bootstrap__WEBPACK_IMPORTED_MODULE_4__["default"], {
-        animated: true,
-        now: progress,
-        label: `${progress}%`,
-        className: "mb-3"
-      })
-    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(react_bootstrap__WEBPACK_IMPORTED_MODULE_5__["default"], {
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_1__.jsx)(react_bootstrap__WEBPACK_IMPORTED_MODULE_4__["default"], {
       type: "submit",
       variant: "primary",
       className: "w-100 mt-4",
@@ -4690,158 +4668,6 @@ const FormText = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.forwardRef(
 });
 FormText.displayName = 'FormText';
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (FormText);
-
-/***/ }),
-
-/***/ "./node_modules/react-bootstrap/esm/ProgressBar.js":
-/*!*********************************************************!*\
-  !*** ./node_modules/react-bootstrap/esm/ProgressBar.js ***!
-  \*********************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! classnames */ "./node_modules/classnames/index.js");
-/* harmony import */ var classnames__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(classnames__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "react");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _ThemeProvider__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./ThemeProvider */ "./node_modules/react-bootstrap/esm/ThemeProvider.js");
-/* harmony import */ var _ElementChildren__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./ElementChildren */ "./node_modules/react-bootstrap/esm/ElementChildren.js");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react/jsx-runtime */ "react/jsx-runtime");
-/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__);
-"use client";
-
-
-
-
-
-
-
-const ROUND_PRECISION = 1000;
-
-/**
- * Validate that children, if any, are instances of `ProgressBar`.
- */
-function onlyProgressBar(props, propName, componentName) {
-  const children = props[propName];
-  if (!children) {
-    return null;
-  }
-  let error = null;
-  react__WEBPACK_IMPORTED_MODULE_1__.Children.forEach(children, child => {
-    if (error) {
-      return;
-    }
-
-    /**
-     * Compare types in a way that works with libraries that patch and proxy
-     * components like react-hot-loader.
-     *
-     * see https://github.com/gaearon/react-hot-loader#checking-element-types
-     */
-    // eslint-disable-next-line @typescript-eslint/no-use-before-define
-    const element = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)(ProgressBar, {});
-    if (child.type === element.type) return;
-    const childType = child.type;
-    const childIdentifier = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.isValidElement(child) ? childType.displayName || childType.name || childType : child;
-    error = new Error(`Children of ${componentName} can contain only ProgressBar ` + `components. Found ${childIdentifier}.`);
-  });
-  return error;
-}
-function getPercentage(now, min, max) {
-  const percentage = (now - min) / (max - min) * 100;
-  return Math.round(percentage * ROUND_PRECISION) / ROUND_PRECISION;
-}
-function renderProgressBar({
-  min,
-  now,
-  max,
-  label,
-  visuallyHidden,
-  striped,
-  animated,
-  className,
-  style,
-  variant,
-  bsPrefix,
-  ...props
-}, ref) {
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
-    ref: ref,
-    ...props,
-    role: "progressbar",
-    className: classnames__WEBPACK_IMPORTED_MODULE_0___default()(className, `${bsPrefix}-bar`, {
-      [`bg-${variant}`]: variant,
-      [`${bsPrefix}-bar-animated`]: animated,
-      [`${bsPrefix}-bar-striped`]: animated || striped
-    }),
-    style: {
-      width: `${getPercentage(now, min, max)}%`,
-      ...style
-    },
-    "aria-valuenow": now,
-    "aria-valuemin": min,
-    "aria-valuemax": max,
-    children: visuallyHidden ? /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("span", {
-      className: "visually-hidden",
-      children: label
-    }) : label
-  });
-}
-const ProgressBar = /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_1__.forwardRef(({
-  isChild = false,
-  ...rest
-}, ref) => {
-  const props = {
-    min: 0,
-    max: 100,
-    animated: false,
-    visuallyHidden: false,
-    striped: false,
-    ...rest
-  };
-  props.bsPrefix = (0,_ThemeProvider__WEBPACK_IMPORTED_MODULE_3__.useBootstrapPrefix)(props.bsPrefix, 'progress');
-  if (isChild) {
-    return renderProgressBar(props, ref);
-  }
-  const {
-    min,
-    now,
-    max,
-    label,
-    visuallyHidden,
-    striped,
-    animated,
-    bsPrefix,
-    variant,
-    className,
-    children,
-    ...wrapperProps
-  } = props;
-  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_2__.jsx)("div", {
-    ref: ref,
-    ...wrapperProps,
-    className: classnames__WEBPACK_IMPORTED_MODULE_0___default()(className, bsPrefix),
-    children: children ? (0,_ElementChildren__WEBPACK_IMPORTED_MODULE_4__.map)(children, child => /*#__PURE__*/(0,react__WEBPACK_IMPORTED_MODULE_1__.cloneElement)(child, {
-      isChild: true
-    })) : renderProgressBar({
-      min,
-      now,
-      max,
-      label,
-      visuallyHidden,
-      striped,
-      animated,
-      bsPrefix,
-      variant
-    }, ref)
-  });
-});
-ProgressBar.displayName = 'ProgressBar';
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (ProgressBar);
 
 /***/ }),
 

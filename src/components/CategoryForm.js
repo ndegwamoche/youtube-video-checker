@@ -5,9 +5,9 @@ const CategoryForm = () => {
     const [categoryId, setCategoryId] = useState(""); // Store the selected category ID
     const [categories, setCategories] = useState([]); // Store the categories list
     const [errorMessage, setErrorMessage] = useState(""); // State to store the error message
-    const [progress, setProgress] = useState(26); // Track progress (0-100)
     const [isProcessing, setIsProcessing] = useState(false); // To track if the process is running
     const [successMessage, setSuccessMessage] = useState(""); // Store success message
+    const [progress, setProgress] = useState(0); // Progress bar state
 
     // Fetch categories when the component is mounted
     useEffect(() => {
@@ -48,57 +48,45 @@ const CategoryForm = () => {
 
         // Initialize success message
         setSuccessMessage("");
-        setProgress(0);
 
-        // Start checking videos and updating progress
+        // Start checking videos
         checkVideos(categoryId);
     };
 
-    // Function to simulate the processing of posts and updating progress
+    // Function to check videos and submit posts
     const checkVideos = (categoryId) => {
-        // Start the process
         setIsProcessing(true);
         setSuccessMessage("Checking videos, please wait...");
 
-        const fetchProgress = () => {
-            fetch(yvcData.ajaxUrl, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
-                },
-                body: new URLSearchParams({
-                    action: "get_progress", // Ensure this action is checking the server's progress
-                    category_id: categoryId,
-                }),
-            })
-                .then((response) => response.json()) // Expect JSON response
-                .then((data) => {
-                    const totalPosts = data.data.totalPosts;
-                    const postsProcessed = data.data.postsProcessed;
-                    const progress = data.data.progress;
-
-                    // Update progress bar with the current progress
-                    setProgress(progress);
-
-                    // If all posts are processed, stop the process
-                    if (postsProcessed === totalPosts) {
-                        setSuccessMessage("All posts checked and updated successfully!");
-                        setIsProcessing(false); // Stop processing
-                    } else {
-                        // If posts are still being processed, keep polling
-                        setTimeout(fetchProgress, 1000); // Delay next fetch by 1 second
-                    }
-                })
-                .catch((error) => {
-                    console.error("Error:", error);
-                    setSuccessMessage("Error processing posts.");
+        // Send POST request to the REST API endpoint
+        fetch(yvcData.restUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: new URLSearchParams({
+                nonce: yvcData.noncex, // Nonce for security
+                category_id: categoryId, // Category ID to be checked
+            }),
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.success) {
+                    setSuccessMessage(data.data.message); // Show success message from the response
                     setIsProcessing(false);
-                });
-        };
-
-        // Start the first call to initiate the process
-        fetchProgress();
+                } else {
+                    setIsProcessing(false);
+                    setSuccessMessage("");
+                    setErrorMessage("Error processing posts: " + data.data.message); // Show error message from the response
+                }
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+                setSuccessMessage("Error processing posts.");
+                setIsProcessing(false);
+            });
     };
+
 
     return (
         <Form onSubmit={handleSubmit} className="p-4 shadow-lg bg-white rounded">
@@ -121,16 +109,6 @@ const CategoryForm = () => {
                     ))}
                 </Form.Select>
             </Form.Group>
-
-            {/* Progress Bar */}
-            <div className="mb-3">
-                <ProgressBar
-                    animated
-                    now={progress}
-                    label={`${progress}%`}
-                    className="mb-3"
-                />
-            </div>
 
             {/* Button */}
             <Button type="submit" variant="primary" className="w-100 mt-4" disabled={isProcessing}>
