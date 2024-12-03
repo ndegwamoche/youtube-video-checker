@@ -71,7 +71,7 @@
 
 ## File Structure
 
-`youtube-video-checker/
+youtube-video-checker/
 │
 ├── build/
 │   ├── index.js          # Compiled React components
@@ -95,7 +95,7 @@
 ├── youtube-video-checker.php  # Main plugin file
 ├── composer.json              # PHP dependency manager
 ├── package.json               # Node.js dependencies
-└── LICENSE                    # License file` 
+└── LICENSE                    # License file
 
 ----------
 
