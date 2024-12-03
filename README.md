@@ -28,6 +28,8 @@
 
 ----------
 
+![enter image description here](https://raw.githubusercontent.com/ndegwamoche/youtube-video-checker/main/screenshot.png)
+
 ## Installation
 
 1.  **Download or Clone:**
