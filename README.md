@@ -70,7 +70,7 @@
 ----------
 
 ## File Structure
-
+```
 youtube-video-checker/
 │
 ├── build/
@@ -96,7 +96,7 @@ youtube-video-checker/
 ├── composer.json # PHP dependency manager
 ├── package.json # Node.js dependencies
 └── LICENSE # License file
-
+```
 ----------
 
 ## REST API Endpoints
