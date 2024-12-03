@@ -1,13 +1,22 @@
 import React, { useState, useEffect } from "react";
-import { Form, Button, Alert, ProgressBar } from "react-bootstrap";
+import { Form, Button, Alert } from "react-bootstrap";
+import VideoList from "./VideoList";
 
 const CategoryForm = () => {
     const [categoryId, setCategoryId] = useState(""); // Store the selected category ID
+    const [categoryName, setCategoryName] = useState(""); // Store the selected category name
     const [categories, setCategories] = useState([]); // Store the categories list
     const [errorMessage, setErrorMessage] = useState(""); // State to store the error message
     const [isProcessing, setIsProcessing] = useState(false); // To track if the process is running
     const [successMessage, setSuccessMessage] = useState(""); // Store success message
-    const [progress, setProgress] = useState(0); // Progress bar state
+    const [videos, setVideos] = useState([]); // Store fetched videos
+    const [showVideoList, setShowVideoList] = useState(false); // Toggle for showing video list
+    const [searchTerm, setSearchTerm] = useState("");
+
+    // Filter categories based on the search term
+    const filteredCategories = categories.filter((category) =>
+        category.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     // Fetch categories when the component is mounted
     useEffect(() => {
@@ -33,6 +42,14 @@ const CategoryForm = () => {
             });
     }, []); // Empty dependency array means this effect runs only once when the component mounts
 
+    // Update categoryName when categoryId or categories change
+    useEffect(() => {
+        if (categoryId) {
+            const selectedCategory = categories.find((category) => category.id === categoryId);
+            setCategoryName(selectedCategory ? selectedCategory.name : ""); // Set categoryName if category is found
+        }
+    }, [categoryId, categories]); // Added 'categories' as a dependency
+
     const handleSubmit = (e) => {
         e.preventDefault();
 
@@ -49,44 +66,55 @@ const CategoryForm = () => {
         // Initialize success message
         setSuccessMessage("");
 
-        // Start checking videos
-        checkVideos(categoryId);
+        // Fetch videos for the selected category
+        fetchVideos(categoryId);
     };
 
-    // Function to check videos and submit posts
-    const checkVideos = (categoryId) => {
+    // Function to fetch videos for the selected category
+    const fetchVideos = (categoryId) => {
         setIsProcessing(true);
-        setSuccessMessage("Checking videos, please wait...");
+        setSuccessMessage("Fetching videos, please wait...");
 
         // Send POST request to the REST API endpoint
-        fetch(yvcData.restUrl, {
+        fetch(yvcData.ajaxUrl, {
             method: "POST",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
             },
             body: new URLSearchParams({
-                nonce: yvcData.noncex, // Nonce for security
-                category_id: categoryId, // Category ID to be checked
+                action: "yvc_get_posts",
+                category_id: categoryId, // Category ID to fetch videos
             }),
         })
             .then((response) => response.json())
             .then((data) => {
                 if (data.success) {
-                    setSuccessMessage(data.data.message); // Show success message from the response
-                    setIsProcessing(false);
-                } else {
-                    setIsProcessing(false);
+                    setVideos(data.data.videos); // Store videos in state
+                    setShowVideoList(true); // Show the video list screen
                     setSuccessMessage("");
-                    setErrorMessage("Error processing posts: " + data.data.message); // Show error message from the response
+                } else {
+                    setErrorMessage("Error fetching videos: " + data.data.message); // Show error message
                 }
+                setIsProcessing(false);
             })
             .catch((error) => {
                 console.error("Error:", error);
-                setSuccessMessage("Error processing posts.");
+                setErrorMessage("Error fetching videos.");
+                setSuccessMessage("");
                 setIsProcessing(false);
             });
     };
 
+    // Show the video list screen if toggled
+    if (showVideoList) {
+        return (
+            <VideoList
+                videos={videos}
+                onBack={() => setShowVideoList(false)} // Go back to the category form
+                categoryName={categoryName}
+            />
+        );
+    }
 
     return (
         <Form onSubmit={handleSubmit} className="p-4 shadow-lg bg-white rounded">
@@ -95,6 +123,18 @@ const CategoryForm = () => {
             {/* Success Message */}
             {successMessage && <Alert variant="success" className="mb-3">{successMessage}</Alert>}
 
+            {/* Filter Input */}
+            <Form.Group controlId="categorySearch" className="mb-3">
+                <Form.Control
+                    type="text"
+                    placeholder="Search Categories..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="mb-3 small"
+                />
+            </Form.Group>
+
+            {/* Category Select Dropdown */}
             <Form.Group controlId="categorySelect" className="mb-3">
                 <Form.Select
                     className="w-100"
@@ -102,11 +142,15 @@ const CategoryForm = () => {
                     onChange={(e) => setCategoryId(e.target.value)}
                 >
                     <option value="">-- Choose a Category --</option>
-                    {categories.map((category) => (
-                        <option key={category.id} value={category.id}>
-                            {category.name}
-                        </option>
-                    ))}
+                    {filteredCategories.length > 0 ? (
+                        filteredCategories.map((category) => (
+                            <option key={category.id} value={category.id}>
+                                {category.name}
+                            </option>
+                        ))
+                    ) : (
+                        <option value="">No categories found</option>
+                    )}
                 </Form.Select>
             </Form.Group>
 
