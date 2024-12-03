@@ -74,28 +74,28 @@
 youtube-video-checker/
 │
 ├── build/
-│   ├── index.js          # Compiled React components
-│   ├── index.asset.php   # Asset dependencies
+│ ├── index.js # Compiled React components
+│ ├── index.asset.php # Asset dependencies
 │
 ├── includes/
-│   ├── class-yvc-admin.php      # Handles admin interface
-│   ├── class-yvc-ajax.php       # Handles AJAX requests
-│   ├── class-yvc-download.php   # FastDownload integration
-│   ├── class-yvc-init.php       # Plugin initializer
-│   ├── class-yvc-rest.php       # REST API handler
-│   ├── class-yvc-utils.php      # Utility functions
+│ ├── class-yvc-admin.php # Handles admin interface
+│ ├── class-yvc-ajax.php # Handles AJAX requests
+│ ├── class-yvc-download.php # FastDownload integration
+│ ├── class-yvc-init.php # Plugin initializer
+│ ├── class-yvc-rest.php # REST API handler
+│ ├── class-yvc-utils.php # Utility functions
 │
 ├── src/
-│   ├── components/
-│   │   ├── CategoryForm.js  # React component for the admin form
-│   │   ├── VideoList.js     # React component for video lists
-│   ├── app.js               # Main React app entry
-│   ├── index.js             # React app renderer
+│ ├── components/
+│ │ ├── CategoryForm.js # React component for the admin form
+│ │ ├── VideoList.js # React component for video lists
+│ ├── app.js # Main React app entry
+│ ├── index.js # React app renderer
 │
-├── youtube-video-checker.php  # Main plugin file
-├── composer.json              # PHP dependency manager
-├── package.json               # Node.js dependencies
-└── LICENSE                    # License file
+├── youtube-video-checker.php # Main plugin file
+├── composer.json # PHP dependency manager
+├── package.json # Node.js dependencies
+└── LICENSE # License file
 
 ----------
 
