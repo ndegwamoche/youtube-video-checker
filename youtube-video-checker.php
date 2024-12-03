@@ -1,6 +1,7 @@
 <?php
 /*
 Plugin Name: YouTube Video Checker
+Description: Check posts for YouTube videos by category, identify missing videos, and add them to the respective posts to ensure all content is complete and properly embedded.
 Version: 1.0
 Author: Moche
 Author URI: https://www.linkedin.com/in/ndegwer/
