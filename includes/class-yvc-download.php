@@ -1,33 +1,56 @@
 <?php
 
+/**
+ * YouTube Video Checker Plugin
+ *
+ * @category Plugin
+ * @package  YouTube_Video_Checker
+ * @author   Moche <ndegwamoche@gmail.com>
+ * @license  MIT <https://opensource.org/licenses/MIT>
+ * @link     https://github.com/youtube-video-checker
+ * @requires PHP 7.4
+ */
+
+/**
+ * Class YVC_FastDownload
+ *
+ * Handles video search using FastDownload API and yt-dlp.
+ *
+ * @category Core
+ * @package  YouTube_Video_Checker
+ * @author   Moche <ndegwamoche@gmail.com>
+ * @license  MIT <https://opensource.org/licenses/MIT>
+ * @link     https://github.com/youtube-video-checker
+ */
 class YVC_FastDownload
 {
-    public function search_video_using_fastdownload($query)
+    /**
+     * Search for a YouTube video using the FastDownload API.
+     *
+     * @param string $query The search query.
+     * 
+     * @return array The result or error message.
+     */
+    public function searchVideoUsingFastDownload($query)
     {
-        // Prepare the API URL
         $api_url = 'https://fastdownload.video/api/youtube/search?query=' . urlencode($query);
-
-        // Use wp_remote_get to fetch data from the API
         $response = wp_remote_get($api_url);
 
         if (is_wp_error($response)) {
             return [
-                'error' => 'Error fetching data from FastDownload API: ' . $response->get_error_message()
+                'error' =>
+                'Error fetching data from FastDownload API: ' . $response->get_error_message()
             ];
         }
 
-        // Decode the JSON response
         $data = json_decode(wp_remote_retrieve_body($response), true);
 
-        if (isset($data['results']) && count($data['results']) > 0) {
-
+        if (isset($data['results'][0])) {
             $utils = new YVC_Utils();
-
-            // Return the first result
             return [
-                'id' => $utils->get_video_id_from_url($data['results'][0]['link']),
+                'id'    => $utils->getVideoIdFromUrl($data['results'][0]['link']),
                 'title' => $data['results'][0]['title'],
-                'link' => $data['results'][0]['link']
+                'link'  => $data['results'][0]['link']
             ];
         }
 
@@ -36,30 +59,31 @@ class YVC_FastDownload
         ];
     }
 
-    public function search_video_using_yt_dlp($query)
+    /**
+     * Search for a YouTube video using yt-dlp.
+     *
+     * @param string $query The search query.
+     * 
+     * @return array The result or error message.
+     */
+    public function searchVideoUsingYtDlp($query)
     {
-        // Run yt-dlp command to search for videos
-        $command = escapeshellcmd("yt-dlp --quiet --print-json ytsearch:'$query' 2>&1");  // Capture both output and error
-        $output = shell_exec($command);
+        $command = escapeshellcmd("yt-dlp --quiet --print-json ytsearch:'$query' 2>&1");
+        $output  = shell_exec($command);
 
         if ($output) {
-            // Attempt to decode the JSON result
             $result = json_decode($output, true);
             if (isset($result['id'])) {
                 return $result;  // Return video details like ID
-            } else {
-                // If JSON decode failed, return the error message from yt-dlp
-                return [
-                    'error' => 'yt-dlp Error: ' . $output  // Return the full error output from yt-dlp
-                ];
             }
-        } else {
-            // If there's no output, handle the case where yt-dlp failed silently
+
             return [
-                'error' => 'yt-dlp failed to search or returned no result for the query: ' . $query
+                'error' => 'yt-dlp Error: ' . $output  // Return the error output from yt-dlp
             ];
         }
 
-        return false;
+        return [
+            'error' => 'yt-dlp failed to search or returned no result for: ' . $query
+        ];
     }
 }
