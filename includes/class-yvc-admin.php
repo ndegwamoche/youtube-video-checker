@@ -20,7 +20,7 @@
  * @package  YouTube_Video_Checker
  * @author   Moche <ndegwamoche@gmail.com>
  * @license  MIT <https://opensource.org/licenses/MIT>
- * @link     https://github.com/your-repo-link
+ * @link     https://github.com/youtube-video-checker
  */
 class YVC_Admin
 {
