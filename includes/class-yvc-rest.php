@@ -86,18 +86,10 @@ class YVC_Rest
                 // Replace the old video ID with the new one in the post content
                 $updated_content = str_replace($video_id, $video_id_to_use, $post_content);
 
-                // Check if the content was updated
-                if ($updated_content !== $post_content) {
-                    // Update the post with the new content
-                    wp_update_post([
-                        'ID' => $post_id,
-                        'post_content' => $updated_content
-                    ]);
-
-                    $processed_posts[] = 'Post ' . $post_id . ' updated successfully with new video.';
-                } else {
-                    $processed_posts[] = 'No video URL to fix for Post ' . $post_id;
-                }
+                wp_update_post([
+                    'ID' => $post_id,
+                    'post_content' => $updated_content
+                ]);
             }
 
             // Send success response

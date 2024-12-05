@@ -1,5 +1,7 @@
 {
     "name": "moche/youtube-video-checker",
     "type": "project",
-    "require": {}
+    "require-dev": {
+        "squizlabs/php_codesniffer": "*"
+    }
 }

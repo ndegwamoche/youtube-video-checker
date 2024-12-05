@@ -1,11 +1,18 @@
 <?php
-/*
-Plugin Name: YouTube Video Checker
-Description: Check posts for YouTube videos by category, identify missing videos, and add them to the respective posts to ensure all content is complete and properly embedded.
-Version: 1.0
-Author: Moche
-Author URI: https://www.linkedin.com/in/ndegwer/
-*/
+
+/**
+ * Plugin Name: YouTube Video Checker
+ * Description: Check posts for YouTube videos by category, 
+ * identify missing videos, and add them to the respective posts to ensure 
+ * all content is complete and properly embedded.
+ *
+ * @category YouTube_Video_Checker
+ * @package  YouTube_Video_Checker
+ * @author   Moche <ndegwamoche@gmail.com>
+ * @license  MIT <https://opensource.org/licenses/MIT>
+ * @version  CVS:1.0
+ * @link     https://github.com/ndegwamoche/youtube-video-checker
+ */
 
 if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly
