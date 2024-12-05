@@ -29,14 +29,14 @@ class YVC_Rest
      *
      * @return void
      */
-    public static function registerRoutes()
+    public static function register_routes()
     {
         register_rest_route(
             'youtube-video-checker/v1',
             '/fix-video',
             [
                 'methods'             => 'POST',
-                'callback'            => ['YVC_Rest', 'checkYoutubeVideosProgress'],
+                'callback'            => ['YVC_Rest', 'check_youtube_videos_progress'],
                 'permission_callback' => '__return_true',
             ]
         );
@@ -51,7 +51,7 @@ class YVC_Rest
      *
      * @return void
      */
-    public static function checkYoutubeVideosProgress(WP_REST_Request $request)
+    public static function check_youtube_videos_progress(WP_REST_Request $request)
     {
         $post_id    = $request->get_param('postId');
         $video_id   = $request->get_param('videoId');

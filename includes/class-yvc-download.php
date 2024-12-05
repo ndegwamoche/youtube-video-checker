@@ -31,7 +31,7 @@ class YVC_FastDownload
      * 
      * @return array The result or error message.
      */
-    public function searchVideoUsingFastDownload($query)
+    public function search_video_using_fastdownload($query)
     {
         $api_url = 'https://fastdownload.video/api/youtube/search?query=' . urlencode($query);
         $response = wp_remote_get($api_url);
@@ -48,7 +48,7 @@ class YVC_FastDownload
         if (isset($data['results'][0])) {
             $utils = new YVC_Utils();
             return [
-                'id'    => $utils->getVideoIdFromUrl($data['results'][0]['link']),
+                'id'    => $utils->get_video_id_from_url($data['results'][0]['link']),
                 'title' => $data['results'][0]['title'],
                 'link'  => $data['results'][0]['link']
             ];
@@ -66,7 +66,7 @@ class YVC_FastDownload
      * 
      * @return array The result or error message.
      */
-    public function searchVideoUsingYtDlp($query)
+    public function search_video_using_yt_dlp($query)
     {
         $command = escapeshellcmd("yt-dlp --quiet --print-json ytsearch:'$query' 2>&1");
         $output  = shell_exec($command);

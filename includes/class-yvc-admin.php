@@ -34,7 +34,7 @@ class YVC_Admin
      * 
      * @return void
      */
-    public static function enqueueScripts($hook)
+    public static function enqueue_scripts($hook)
     {
         if (!is_admin()) {
             return;
@@ -80,14 +80,14 @@ class YVC_Admin
      *
      * @return void
      */
-    public static function createAdminPage()
+    public static function create_admin_page()
     {
         add_menu_page(
             'YouTube Video Checker',
             'YouTube Checker',
             'manage_options',
             'youtube-video-checker',
-            ['YVC_Admin', 'renderAdminPage'],
+            ['YVC_Admin', 'render_admin_page'],
             'dashicons-video-alt3'
         );
     }
@@ -100,7 +100,7 @@ class YVC_Admin
      *
      * @return void
      */
-    public static function renderAdminPage()
+    public static function render_admin_page()
     {
         echo '<div class="wrap"><div id="youtube-video-checker"></div></div>';
     }

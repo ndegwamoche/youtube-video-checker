@@ -33,7 +33,7 @@ class YVC_Ajax
      *
      * @return void
      */
-    public function getPosts()
+    public function get_posts()
     {
         // Check for permissions
         if (!current_user_can('manage_options')) {
@@ -113,7 +113,7 @@ class YVC_Ajax
      *
      * @return void
      */
-    public function getCategories()
+    public function get_categories()
     {
         // Check for permissions
         if (!current_user_can('manage_options')) {

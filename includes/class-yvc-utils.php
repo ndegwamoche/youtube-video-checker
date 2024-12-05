@@ -31,7 +31,7 @@ class YVC_Utils
      * 
      * @return bool True if the video exists, false otherwise.
      */
-    public function checkIfYouTubeVideoExist($video_id)
+    public function check_if_youtube_video_exist($video_id)
     {
         $cache_key = 'youtube_video_exists_' . $video_id;
         $cached_result = get_transient($cache_key);
@@ -67,7 +67,7 @@ class YVC_Utils
      * 
      * @return string|null The extracted video ID, or null if not found.
      */
-    public function getVideoIdFromUrl($url)
+    public function get_video_id_from_url($url)
     {
         preg_match('/(?:watch\?v=|embed\/)([a-zA-Z0-9_-]+)/', $url, $matches);
         return $matches[1] ?? null;
