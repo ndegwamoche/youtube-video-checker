@@ -11,7 +11,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@wordpress/scripts": "^30.6.0",
+    "@wordpress/scripts": "^30.7.0",
     "bootstrap": "^5.3.3",
     "react-bootstrap": "^2.10.6"
   }
